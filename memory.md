@@ -139,7 +139,41 @@ Get-ChildItem "dwgfile\*.dwg" | ForEach-Object {
 ### 结论
 LibreDWG 的解析能力远超 libdxfrw，可直接用于生产环境的批量 DWG->DXF 转换。原 libdxfrw 项目保留用于参考，实际转换任务统一使用 LibreDWG。
 
+## DXF 后处理工具 fix_dxf
+
+由于 LibreDWG 输出的 DXF 存在两个兼容性问题，项目内建了 `fix_dxf.exe` 进行一键修复：
+
+### 问题 1：编码标记错误
+LibreDWG 输出中文时使用 GBK/GB18030 编码，但 Header 中 `$DWGCODEPAGE` 仍标记为 `ANSI_936`。现代 CAD 查看器（按 AC1021+ 规范）默认以 UTF-8 打开，导致中文乱码。
+
+**fix**：将文件内容从 GBK 转码为 UTF-8，并更新 `$DWGCODEPAGE` 为 `UTF-8`。
+
+### 问题 2：图层颜色为负值
+LibreDWG 输出的 LAYER 表中 `62` group code 的值为负数（如 `-7`），在 CAD 规范中表示**图层关闭/不可见**，导致打开后全黑。
+
+**fix**：在 LAYER table 中将所有负的 `62` 值取绝对值，使图层可见。
+
+### 构建
+```bash
+cmake -B build -S .
+cmake --build build --config Release
+# 产物：build/fix_dxf.exe
+```
+
+### 使用
+```bash
+# 处理目录下所有 .dxf 文件（就地修改）
+build\fix_dxf.exe dxf_fresh\
+```
+
+### 技术细节
+- 使用 Windows API `MultiByteToWideChar` / `WideCharToMultiByte` 进行 GBK→UTF-8 转码
+- 对无效 GBK 字节采用 U+FFFD (`\xEF\xBF\xBD`) 替换，与 Python `decode('gbk', errors='replace')` 行为一致
+- 以二进制模式读写，保留 DXF 标准的 CRLF 换行
+- 自动检测 UTF-8（无需转码）和 GBK（需转码）
+
 ## 注意事项
 - 原生 VS 项目使用 `#pragma comment(lib, ...)` 自动链接 `libdxfrw.lib`（已用 `#ifdef _MSC_VER` 包裹，不影响 Clang/GCC）
 - 运行时通过 `setlocale(LC_ALL, "Chinese-simplified")` 设置中文环境
 - 原项目为 VS2008 (`.vcproj`) 格式，无法被现代 MSBuild 直接识别
+- **LibreDWG 的 `dwg2dxf` 输出不稳定**：同一份 DWG 多次转换得到的原始 DXF 可能存在微小差异（如时间戳、字典顺序），因此完整重新跑 pipeline 后与历史备份的逐字节比对可能不完全一致，但这不影响 CAD 打开效果

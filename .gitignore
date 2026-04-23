@@ -11,6 +11,7 @@ build/
 dxf_output/
 dxf_fresh/
 dxf_output_libredwg/
+dxf_output_backup/
 
 # Downloaded third-party tools
 libredwg-0.13.4-win64/

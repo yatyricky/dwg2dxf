@@ -57,7 +57,10 @@ target_include_directories(dwg2dxf PRIVATE
 
 target_link_libraries(dwg2dxf PRIVATE libdxfrw)
 
-# Platform-specific settings
+# fix_dxf executable: post-process LibreDWG DXF output
+# Fixes encoding (GBK->UTF-8), negative layer colors, and DWGCODEPAGE
+add_executable(fix_dxf fix_dxf.cpp)
+
 if(WIN32)
     # On Windows, ensure setlocale works correctly with Chinese characters
     target_compile_definitions(dwg2dxf PRIVATE _CRT_SECURE_NO_WARNINGS)
