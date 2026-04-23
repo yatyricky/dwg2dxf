@@ -14,14 +14,13 @@
 #include <fstream>
 #include <sys/stat.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#include <crtdbg.h>
+#endif
+
 #include "dx_iface.h"
 #include "dx_data.h"
-
-#ifdef _DEBUG
-	#pragma  comment(lib,"../libdxfrw/debug/libdxfrw.lib")
-#else
-	#pragma  comment(lib,"../libdxfrw/release/libdxfrw.lib")
-#endif // _DEBUG
 
 #ifndef S_ISDIR
 #define S_ISDIR(mode) (((mode) & S_IFMT) == S_IFDIR)
@@ -118,6 +117,16 @@ bool convertFile(std::string inName, std::string outName, DRW::Version ver, bool
 }
 
 int main(int argc, char *argv[]) {
+#ifdef _WIN32
+    // Disable Windows crash dialog boxes so failures go straight to stderr and exit
+    SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDERR);
+    _CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDERR);
+    _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
+    _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
+#endif
     bool badState = false;
     bool binary = false;
     bool overwrite = false;

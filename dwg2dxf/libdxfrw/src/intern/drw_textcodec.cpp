@@ -463,33 +463,23 @@ std::string DRW_ConvUTF16::fromUtf8(std::string *s){
 #include "../Transcode.h"
 #include <iostream>
 #include <Windows.h>
-std::string DRW_ConvUTF16::toUtf8(std::string *s){//RLZ: pending to write
-    
-	//int nLen = s->length();
-	//wchar_t *pwbuf = (wchar_t*)calloc(nLen,sizeof(wchar_t));
-	//memcpy(pwbuf,s->c_str(),nLen);
+std::string DRW_ConvUTF16::toUtf8(std::string *s) {
+    std::string res;
+    if (s->empty()) return res;
 
-	//OutputDebugStringW(pwbuf);
-	//OutputDebugStringW(L"\n");
+    // Ensure even length (UTF-16 is 2 bytes per char)
+    size_t len = s->length();
+    if (len % 2 != 0) len--;
+    if (len == 0) return res;
 
-	//string str;
-	//Transcode::Unicode_to_UTF8(pwbuf,nLen*2,str);
-	//free(pwbuf);
-	//pwbuf=NULL;
-	//return str;
+    const wchar_t* wstr = reinterpret_cast<const wchar_t*>(s->c_str());
+    int wlen = static_cast<int>(len / 2);
 
-//	std::cout<<__FUNCTION__<<" пео╒ "<<strAn.c_str()<<endl;
-
-	
-	std::string res;
-    std::string::iterator it;
-    for ( it=s->begin() ; it < s->end(); ++it ) {
-        unsigned char c1 = *it;
-        unsigned char c2 = *(++it);
-        duint16 ch = (c2 <<8) | c1;
-        res +=encodeNum(ch);
-    } //end for
-
+    int size_needed = WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, NULL, 0, NULL, NULL);
+    if (size_needed > 0) {
+        res.resize(size_needed);
+        WideCharToMultiByte(CP_UTF8, 0, wstr, wlen, &res[0], size_needed, NULL, NULL);
+    }
     return res;
 }
 

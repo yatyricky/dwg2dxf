@@ -13,8 +13,8 @@
 #ifndef DX_IFACE_H
 #define DX_IFACE_H
 
-#include "../libdxfrw/src/drw_interface.h"
-#include "../libdxfrw/src/libdxfrw.h"
+#include "drw_interface.h"
+#include "libdxfrw.h"
 #include "dx_data.h"
 
 class dx_iface : public DRW_Interface {
