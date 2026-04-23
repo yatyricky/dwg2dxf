@@ -1,11 +1,13 @@
 # Build outputs
 build/
+build_work/
 *.exe
 *.obj
 *.lib
 *.dll
 *.pdb
 *.ilk
+*.spec
 
 # DXF conversion outputs (generated)
 dxf_output/

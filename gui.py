@@ -14,10 +14,17 @@ import threading
 import tkinter as tk
 from tkinter import ttk, messagebox, filedialog, scrolledtext
 
+# ---------------------------------------------------------------------------
+# Base directory (supports both script and PyInstaller frozen mode)
+# ---------------------------------------------------------------------------
+if getattr(sys, 'frozen', False):
+    BASE_DIR = os.path.dirname(sys.executable)
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Add local tkinterdnd2 to path (bundled, no pip install needed)
-_script_dir = os.path.dirname(os.path.abspath(__file__))
-if _script_dir not in sys.path:
-    sys.path.insert(0, _script_dir)
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
 try:
     from tkinterdnd2 import TkinterDnD, DND_FILES
@@ -29,10 +36,12 @@ except ImportError:
 # Constants
 # ---------------------------------------------------------------------------
 APP_NAME = "DWG to DXF Converter"
-LIBRE_DWG_EXE = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "libredwg-0.13.4-win64", "dwg2dxf.exe"
-)
+# LibreDWG path: PyInstaller onedir puts bundled dirs under _internal/
+_libre_paths = [
+    os.path.join(BASE_DIR, "libredwg-0.13.4-win64", "dwg2dxf.exe"),
+    os.path.join(BASE_DIR, "_internal", "libredwg-0.13.4-win64", "dwg2dxf.exe"),
+]
+LIBRE_DWG_EXE = next((p for p in _libre_paths if os.path.exists(p)), _libre_paths[0])
 
 # ---------------------------------------------------------------------------
 # Fix DXF logic (migrated from fix_dxf.cpp)
