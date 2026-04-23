@@ -1,0 +1,21 @@
+# AI-Assisted Development Credits
+# Format follows Linux kernel CREDITS file conventions
+#
+# This file records the AI tools and environment used in the development
+# of this project, as per the Linux kernel documentation style.
+
+N: AI Development Assistant (via Baidu Comate)
+E: N/A (AI-assisted, no human email)
+D: Code generation, debugging, refactoring, documentation,
+   build script authoring, GUI design and implementation
+C: Editor=Microsoft VSCode; Plugin=Baidu Comate; LLM=Kimi-K2.6
+
+N: libredwg (LibreDWG project)
+E: https://github.com/LibreDWG/libredwg
+D: Precompiled Windows binaries used as the DWG-to-DXF conversion engine
+W: https://www.gnu.org/software/libredwg/
+
+N: tkinterdnd2
+E: https://github.com/pmgagne/tkinter-dnd2
+D: Drag-and-drop support library for tkinter, bundled locally
+W: https://pypi.org/project/tkinterdnd2/

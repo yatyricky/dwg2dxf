@@ -40,3 +40,13 @@ python gui.py
 
 - 原项目基于 libdxfrw（C++），但读取 DWG 可靠性差
 - 已迁移为 Python + tkinter GUI，使用 LibreDWG 做转换核心
+
+## License
+
+Dual-licensed under **GPL-2.0-or-later** or **GPL-3.0-or-later**, at your option.
+
+See [LICENSE](LICENSE) for the full dual-license statement.
+
+## AI Development Credits
+
+See [CREDITS-AI](CREDITS-AI) for AI-assisted development tooling information (Linux kernel CREDITS format).
